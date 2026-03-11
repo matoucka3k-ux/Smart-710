@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart 710 — Donnez votre opinion</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #060612;
+  --surface: #0d0d1f;
+  --surface2: #13132a;
+  --border: rgba(255,255,255,0.08);
+  --accent: #6c63ff;
+  --accent2: #a78bfa;
+  --green: #22d3a5;
+  --red: #f87171;
+  --text: #e8e8f0;
+  --muted: #6b6b8a;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(108,99,255,0.15),transparent);pointer-events:none;z-index:0}
+
+/* PAGES */
+.page{display:none;min-height:100vh;position:relative;z-index:1}
+.page.active{display:flex;flex-direction:column}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 22px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all 0.2s;text-decoration:none}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.btn-ghost:hover{color:var(--text);border-color:rgba(255,255,255,0.2)}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#8b5cf6);color:#fff;box-shadow:0 4px 20px rgba(108,99,255,0.4)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(108,99,255,0.5)}
+.btn-outline{background:transparent;color:var(--text);border:1.5px solid var(--border)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.btn-sm{padding:7px 16px;font-size:13px}
+.btn-lg{padding:14px 32px;font-size:16px;font-weight:700}
+.btn-full{width:100%;padding:13px}
+.btn-danger{background:rgba(248,113,113,0.1);color:var(--red);border:1px solid rgba(248,113,113,0.2)}
+.btn-danger:hover{background:rgba(248,113,113,0.2)}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:50;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;background:rgba(6,6,18,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.nav-logo{font-size:20px;font-weight:900;letter-spacing:-0.5px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-btns{display:flex;gap:10px}
+
+/* ═══ LANDING ═══ */
+#landing{align-items:center;justify-content:center;text-align:center;padding:120px 20px 80px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(108,99,255,0.1);border:1px solid rgba(108,99,255,0.3);color:var(--accent2);font-size:12px;font-weight:600;padding:6px 16px;border-radius:99px;margin-bottom:28px;text-transform:uppercase;letter-spacing:1px;animation:fadeUp 0.6s ease both}
+.badge-pulse{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite}
+.hero-title{font-size:clamp(64px,12vw,110px);font-weight:900;letter-spacing:-4px;line-height:0.95;margin-bottom:16px;animation:fadeUp 0.6s 0.1s ease both}
+.hero-title .grad{background:linear-gradient(135deg,var(--accent),var(--accent2),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:block}
+.hero-title .num{color:rgba(255,255,255,0.1);display:block}
+.hero-tagline{font-size:clamp(18px,3vw,26px);color:var(--muted);font-weight:400;margin-bottom:10px;animation:fadeUp 0.6s 0.2s ease both;line-height:1.5}
+.hero-author{font-size:13px;color:rgba(255,255,255,0.2);margin-bottom:44px;animation:fadeUp 0.6s 0.25s ease both;font-weight:600;letter-spacing:1px;text-transform:uppercase}
+.hero-author strong{color:var(--accent2);font-size:15px}
+.hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;animation:fadeUp 0.6s 0.3s ease both;margin-bottom:16px}
+.hero-note{font-size:12px;color:var(--muted);animation:fadeUp 0.6s 0.4s ease both}
+
+.features-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:680px;width:100%;margin-top:64px;animation:fadeUp 0.6s 0.5s ease both}
+.feat{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;text-align:left;transition:border-color 0.2s}
+.feat:hover{border-color:rgba(108,99,255,0.35)}
+.feat-icon{font-size:26px;margin-bottom:10px}
+.feat-title{font-size:14px;font-weight:700;margin-bottom:4px}
+.feat-desc{font-size:12px;color:var(--muted);line-height:1.6}
+
+/* ═══ FORMS ═══ */
+.form-page{align-items:center;justify-content:center;padding:40px 20px}
+.form-card{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:40px;width:100%;max-width:420px;position:relative;overflow:hidden;animation:fadeUp 0.4s ease both}
+.form-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(to right,var(--accent),var(--accent2),var(--green))}
+.form-logo{font-size:22px;font-weight:900;text-align:center;margin-bottom:6px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.form-title{font-size:22px;font-weight:800;text-align:center;margin-bottom:4px}
+.form-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:28px;line-height:1.6}
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.form-input{width:100%;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;font-family:'Outfit',sans-serif;font-size:14px;color:var(--text);outline:none;transition:border-color 0.2s}
+.form-input:focus{border-color:var(--accent)}
+.form-input::placeholder{color:var(--muted)}
+.form-error{font-size:12px;color:var(--red);margin-top:6px;display:none;padding:8px 12px;background:rgba(248,113,113,0.08);border-radius:8px;border:1px solid rgba(248,113,113,0.2)}
+.form-footer{text-align:center;margin-top:18px;font-size:13px;color:var(--muted)}
+.form-footer a{color:var(--accent2);cursor:pointer;font-weight:600}
+.form-footer a:hover{text-decoration:underline}
+
+/* ═══ STUDENT DASHBOARD ═══ */
+.app-topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20;flex-shrink:0}
+.topbar-logo{font-size:17px;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.user-chip{display:inline-flex;align-items:center;gap:6px;background:rgba(108,99,255,0.1);border:1px solid rgba(108,99,255,0.2);color:var(--accent2);font-size:12px;font-weight:600;padding:5px 12px;border-radius:99px}
+.app-body{flex:1;padding:32px 28px;max-width:720px;width:100%;margin:0 auto}
+
+.section-head{margin-bottom:20px}
+.section-head h2{font-size:20px;font-weight:800;letter-spacing:-0.3px;margin-bottom:3px}
+.section-head p{font-size:13px;color:var(--muted)}
+
+.compose-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:28px}
+.msg-textarea{width:100%;background:var(--surface2);border:1.5px solid var(--border);border-radius:12px;padding:14px;font-family:'Outfit',sans-serif;font-size:14px;color:var(--text);outline:none;resize:vertical;min-height:130px;transition:border-color 0.2s;line-height:1.6}
+.msg-textarea:focus{border-color:var(--accent)}
+.msg-textarea::placeholder{color:var(--muted)}
+
+.anon-row{display:flex;align-items:center;justify-content:space-between;margin-top:16px;flex-wrap:wrap;gap:12px}
+.anon-toggle{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;padding:8px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface2);transition:all 0.2s}
+.anon-toggle:hover{border-color:rgba(108,99,255,0.3)}
+.anon-toggle.active{border-color:rgba(108,99,255,0.5);background:rgba(108,99,255,0.08)}
+.toggle-track{width:38px;height:20px;border-radius:99px;background:rgba(255,255,255,0.1);position:relative;transition:background 0.2s;flex-shrink:0}
+.toggle-track.on{background:var(--accent)}
+.toggle-thumb{width:14px;height:14px;border-radius:50%;background:#fff;position:absolute;top:3px;left:3px;transition:transform 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.3)}
+.toggle-track.on .toggle-thumb{transform:translateX(18px)}
+.toggle-text{font-size:13px;font-weight:600;color:var(--muted)}
+.anon-toggle.active .toggle-text{color:var(--accent2)}
+.char-count{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+
+.anon-info{background:rgba(108,99,255,0.06);border:1px solid rgba(108,99,255,0.15);border-radius:10px;padding:10px 14px;margin-top:14px;font-size:12px;color:var(--accent2);display:none;line-height:1.6}
+.anon-info.show{display:block}
+
+.send-row{display:flex;align-items:center;justify-content:space-between;margin-top:16px;flex-wrap:wrap;gap:10px}
+
+.msgs-list{display:flex;flex-direction:column;gap:10px}
+.msg-item{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px}
+.msg-item-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px}
+.badge-sent{background:rgba(34,211,165,0.1);color:var(--green)}
+.badge-anon{background:rgba(167,139,250,0.1);color:var(--accent2)}
+.badge-named{background:rgba(255,255,255,0.06);color:var(--muted)}
+.msg-item-body{font-size:14px;line-height:1.7;color:var(--text)}
+.msg-item-time{font-size:11px;color:var(--muted);margin-top:8px;font-family:'JetBrains Mono',monospace}
+
+.empty{text-align:center;padding:48px 20px;color:var(--muted)}
+.empty-icon{font-size:42px;margin-bottom:10px;display:block}
+
+/* ═══ ADMIN ═══ */
+#admin-panel.active{flex-direction:row}
+.sidebar{width:210px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-logo{padding:20px 18px;font-size:17px;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;border-bottom:1px solid var(--border)}
+.sidebar-nav{padding:12px 10px;flex:1}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:500;color:var(--muted);transition:all 0.15s;margin-bottom:2px;user-select:none}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:rgba(108,99,255,0.12);color:var(--accent2)}
+.nav-item .count{margin-left:auto;background:var(--accent);color:#fff;font-size:10px;font-weight:800;padding:1px 7px;border-radius:99px;min-width:20px;text-align:center}
+.sidebar-footer{padding:12px 10px;border-top:1px solid var(--border)}
+
+.admin-main{flex:1;overflow-y:auto;padding:28px}
+.admin-tab{display:none}
+.admin-tab.active{display:block}
+
+.page-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:12px}
+.page-head h2{font-size:19px;font-weight:800;margin-bottom:2px}
+.page-head p{font-size:13px;color:var(--muted)}
+
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+.stat-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px}
+.stat-num{font-size:34px;font-weight:900;letter-spacing:-1px;margin-bottom:3px}
+.stat-lbl{font-size:12px;color:var(--muted);font-weight:500}
+
+.filter-row{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.filter-btn{padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);transition:all 0.15s;font-family:'Outfit',sans-serif}
+.filter-btn.active{background:rgba(108,99,255,0.12);color:var(--accent2);border-color:rgba(108,99,255,0.3)}
+
+.admin-msg{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 20px;margin-bottom:10px;transition:border-color 0.15s}
+.admin-msg:hover{border-color:rgba(108,99,255,0.25)}
+.admin-msg-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.sender-name{font-size:13px;font-weight:700}
+.admin-msg-body{font-size:14px;line-height:1.7}
+.admin-msg-foot{display:flex;align-items:center;justify-content:space-between;margin-top:10px;flex-wrap:wrap;gap:8px}
+.msg-time{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+
+.user-row{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 18px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.user-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0}
+.user-name{font-size:14px;font-weight:700}
+.user-email{font-size:11px;color:var(--muted)}
+.user-meta{font-size:12px;color:var(--muted);text-align:right}
+
+/* ═══ TOAST ═══ */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px 18px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:10px;box-shadow:0 8px 30px rgba(0,0,0,0.4);z-index:999;transform:translateY(80px);opacity:0;transition:all 0.3s ease;pointer-events:none;max-width:300px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{border-color:rgba(34,211,165,0.3);color:var(--green)}
+.toast.error{border-color:rgba(248,113,113,0.3);color:var(--red)}
+
+/* ═══ ANIMATIONS ═══ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(1.4)}}
+
+@media(max-width:640px){
+  .nav{padding:14px 16px}
+  .features-row{grid-template-columns:1fr}
+  .app-body{padding:20px 16px}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .sidebar{display:none}
+  .form-card{padding:28px 20px}
+  .hero-title{letter-spacing:-2px}
+}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════════════════════════════
+     LANDING
+═══════════════════════════════════════ -->
+<div class="page active" id="landing">
+  <nav class="nav">
+    <div class="nav-logo">Smart 710</div>
+    <div class="nav-btns">
+      <button class="btn btn-ghost btn-sm" onclick="goTo('login')">Connexion</button>
+      <button class="btn btn-primary btn-sm" onclick="goTo('register')">S'inscrire</button>
+    </div>
+  </nav>
+
+  <div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 20px;width:100%;max-width:680px;margin:0 auto">
+
+    <div class="hero-badge">
+      <div class="badge-pulse"></div>
+      Classe 710 · 2024-2025
+    </div>
+
+    <h1 class="hero-title">
+      <span class="grad">Smart</span>
+      <span class="num">710</span>
+    </h1>
+
+    <p class="hero-tagline">Donnez votre opinion sur la classe</p>
+
+    <p class="hero-author">
+      Fait par <strong>Mathis Bobo</strong><br>
+      Meilleur délégué 🏆
+    </p>
+
+    <div class="hero-actions">
+      <button class="btn btn-primary btn-lg" onclick="goTo('register')">✉️ Envoyer un message</button>
+      <button class="btn btn-outline btn-lg" onclick="goTo('login')">Se connecter</button>
+    </div>
+
+    <p class="hero-note">🎭 Anonymat possible · 🔒 Seul le délégué lit les messages</p>
+
+    <div class="features-row">
+      <div class="feat">
+        <div class="feat-icon">🎭</div>
+        <div class="feat-title">Anonymat total</div>
+        <div class="feat-desc">Envoyez avec ou sans votre nom, vous choisissez à chaque message.</div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">📬</div>
+        <div class="feat-title">Direct au délégué</div>
+        <div class="feat-desc">Mathis Bobo reçoit vos messages et peut y répondre.</div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">🗣️</div>
+        <div class="feat-title">Parole libre</div>
+        <div class="feat-desc">Idées, suggestions, problèmes — tout est bienvenu.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     INSCRIPTION
+═══════════════════════════════════════ -->
+<div class="page form-page" id="register">
+  <div class="form-card">
+    <div class="form-logo">Smart 710</div>
+    <div class="form-title">Créer un compte</div>
+    <div class="form-sub">Rejoignez la classe 710<br>pour envoyer vos opinions à Mathis</div>
+
+    <div class="form-group">
+      <label class="form-label">Prénom & Nom</label>
+      <input class="form-input" id="reg-name" type="text" placeholder="ex: Jean Dupont">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input class="form-input" id="reg-email" type="email" placeholder="jean@exemple.fr">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Mot de passe</label>
+      <input class="form-input" id="reg-pass" type="password" placeholder="Minimum 6 caractères" onkeydown="if(event.key==='Enter')doRegister()">
+      <div class="form-error" id="reg-err"></div>
+    </div>
+
+    <button class="btn btn-primary btn-full" onclick="doRegister()">Créer mon compte →</button>
+
+    <div class="form-footer">
+      Déjà inscrit ? <a onclick="goTo('login')">Se connecter</a><br><br>
+      <a onclick="goTo('landing')" style="color:var(--muted);font-size:12px">← Retour à l'accueil</a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     CONNEXION
+═══════════════════════════════════════ -->
+<div class="page form-page" id="login">
+  <div class="form-card">
+    <div class="form-logo">Smart 710</div>
+    <div class="form-title">Connexion</div>
+    <div class="form-sub">Bienvenue dans la classe 710 👋</div>
+
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input class="form-input" id="login-email" type="email" placeholder="votre@email.fr">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Mot de passe</label>
+      <input class="form-input" id="login-pass" type="password" placeholder="Votre mot de passe" onkeydown="if(event.key==='Enter')doLogin()">
+      <div class="form-error" id="login-err"></div>
+    </div>
+
+    <button class="btn btn-primary btn-full" onclick="doLogin()">Se connecter →</button>
+
+    <div class="form-footer">
+      Pas de compte ? <a onclick="goTo('register')">S'inscrire</a><br><br>
+      <a onclick="goTo('landing')" style="color:var(--muted);font-size:12px">← Retour à l'accueil</a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     DASHBOARD ÉLÈVE
+═══════════════════════════════════════ -->
+<div class="page" id="student">
+  <div class="app-topbar">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="topbar-logo">Smart 710</div>
+      <div class="user-chip">🎓 <span id="stu-name">Élève</span></div>
+    </div>
+    <div class="topbar-right">
+      <button class="btn btn-ghost btn-sm" onclick="doLogout()">Déconnexion</button>
+    </div>
+  </div>
+
+  <div class="app-body">
+    <div class="section-head">
+      <h2>✉️ Nouveau message</h2>
+      <p>Partagez vos idées ou problèmes directement au délégué Mathis Bobo</p>
+    </div>
+
+    <div class="compose-card">
+      <label class="form-label">Votre message</label>
+      <textarea class="msg-textarea" id="msg-text" placeholder="Écrivez votre message… idée, suggestion, problème dans la classe, etc." oninput="onInput()"></textarea>
+
+      <div class="anon-row">
+        <div class="anon-toggle" id="anon-toggle" onclick="toggleAnon()">
+          <div class="toggle-track" id="anon-track"><div class="toggle-thumb"></div></div>
+          <span class="toggle-text" id="anon-text">Envoyer anonymement</span>
+        </div>
+        <span class="char-count" id="char-cnt">0 / 500</span>
+      </div>
+
+      <div class="anon-info" id="anon-info">
+        🎭 Mode anonyme activé — Mathis verra votre message mais <strong>pas votre nom</strong>.
+      </div>
+
+      <div class="send-row">
+        <button class="btn btn-primary" id="send-btn" onclick="sendMsg()">📤 Envoyer</button>
+        <span style="font-size:12px;color:var(--muted)">Seul Mathis Bobo peut lire les messages</span>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <h2>📋 Mes messages</h2>
+      <p>Historique de vos envois</p>
+    </div>
+    <div id="my-msgs"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     ADMIN PANEL
+═══════════════════════════════════════ -->
+<div class="page" id="admin-panel">
+  <div class="sidebar">
+    <div class="sidebar-logo">⚡ Smart 710</div>
+    <div class="sidebar-nav">
+      <div class="nav-item active" data-tab="msgs" onclick="switchTab(this)">
+        📬 Messages <span class="count" id="msg-count">0</span>
+      </div>
+      <div class="nav-item" data-tab="users" onclick="switchTab(this)">👥 Élèves</div>
+      <div class="nav-item" data-tab="stats" onclick="switchTab(this)">📊 Stats</div>
+    </div>
+    <div class="sidebar-footer">
+      <button class="btn btn-ghost btn-sm btn-full" onclick="doLogout()">🚪 Déconnexion</button>
+    </div>
+  </div>
+
+  <div class="admin-main">
+
+    <!-- MESSAGES -->
+    <div class="admin-tab active" id="tab-msgs">
+      <div class="page-head">
+        <div>
+          <h2>Messages reçus</h2>
+          <p>Tous les messages de la classe 710</p>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="loadAdminMsgs()">🔄 Actualiser</button>
+      </div>
+      <div class="filter-row">
+        <button class="filter-btn active" onclick="setFilter('all',this)">Tous</button>
+        <button class="filter-btn" onclick="setFilter('anon',this)">🎭 Anonymes</button>
+        <button class="filter-btn" onclick="setFilter('named',this)">👤 Identifiés</button>
+      </div>
+      <div id="admin-msgs-list"></div>
+    </div>
+
+    <!-- ÉLÈVES -->
+    <div class="admin-tab" id="tab-users">
+      <div class="page-head">
+        <div><h2>Élèves inscrits</h2><p>Liste des comptes de la classe</p></div>
+      </div>
+      <div id="users-list"></div>
+    </div>
+
+    <!-- STATS -->
+    <div class="admin-tab" id="tab-stats">
+      <div class="page-head"><div><h2>Statistiques</h2></div></div>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-num" id="s-total" style="color:var(--accent)">0</div>
+          <div class="stat-lbl">Messages totaux</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" id="s-anon" style="color:var(--accent2)">0</div>
+          <div class="stat-lbl">Anonymes</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" id="s-users" style="color:var(--green)">0</div>
+          <div class="stat-lbl">Élèves inscrits</div>
+        </div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;margin-top:4px">
+        <div style="font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px">Délégué</div>
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:900;color:#fff">M</div>
+          <div>
+            <div style="font-size:16px;font-weight:800">Mathis Bobo</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:1px">Meilleur délégué 🏆 · Classe 710</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ═══ CONSTANTS ═══
+const ADMIN_EMAIL = 'admin@smart710.fr';
+const ADMIN_PASS  = 'mathis710';
+let currentUser = null;
+let anonMode = false;
+let msgFilter = 'all';
+
+// ═══ STORAGE ═══
+const get = (k, d=null) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
+const put = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+
+// ═══ NAVIGATION ═══
+function goTo(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) { el.classList.add('active'); window.scrollTo(0,0); }
+}
+
+// ═══ AUTH ═══
+function doRegister() {
+  const name  = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim().toLowerCase();
+  const pass  = document.getElementById('reg-pass').value;
+  const err   = document.getElementById('reg-err');
+  err.style.display = 'none';
+
+  if (!name || !email || !pass) return showErr(err, '⚠️ Tous les champs sont requis.');
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showErr(err, '⚠️ Email invalide.');
+  if (pass.length < 6) return showErr(err, '⚠️ Mot de passe trop court (6 caractères minimum).');
+  if (email === ADMIN_EMAIL) return showErr(err, '⚠️ Cet email est réservé.');
+
+  const users = get('s710_users', []);
+  if (users.find(u => u.email === email)) return showErr(err, '⚠️ Un compte avec cet email existe déjà.');
+
+  const user = { id: Date.now().toString(), name, email, pass, at: new Date().toISOString() };
+  users.push(user);
+  put('s710_users', users);
+
+  const session = { id: user.id, name, email, isAdmin: false };
+  put('s710_session', session);
+  currentUser = session;
+
+  showToast('✅ Compte créé !', 'success');
+  openStudent();
+}
+
+function doLogin() {
+  const email = document.getElementById('login-email').value.trim().toLowerCase();
+  const pass  = document.getElementById('login-pass').value;
+  const err   = document.getElementById('login-err');
+  err.style.display = 'none';
+
+  if (!email || !pass) return showErr(err, '⚠️ Tous les champs sont requis.');
+
+  if (email === ADMIN_EMAIL && pass === ADMIN_PASS) {
+    const session = { id: 'admin', name: 'Mathis Bobo', email: ADMIN_EMAIL, isAdmin: true };
+    put('s710_session', session);
+    currentUser = session;
+    showToast('👋 Bienvenue Mathis !', 'success');
+    openAdmin();
+    return;
+  }
+
+  const users = get('s710_users', []);
+  const user = users.find(u => u.email === email && u.pass === pass);
+  if (!user) return showErr(err, '⚠️ Email ou mot de passe incorrect.');
+
+  const session = { id: user.id, name: user.name, email: user.email, isAdmin: false };
+  put('s710_session', session);
+  currentUser = session;
+  showToast('✅ Connecté !', 'success');
+  openStudent();
+}
+
+function doLogout() {
+  put('s710_session', null);
+  currentUser = null;
+  anonMode = false;
+  goTo('landing');
+  showToast('À bientôt 👋', 'success');
+}
+
+// ═══ STUDENT ═══
+function openStudent() {
+  document.getElementById('stu-name').textContent = currentUser.name;
+  goTo('student');
+  renderMyMsgs();
+}
+
+function toggleAnon() {
+  anonMode = !anonMode;
+  document.getElementById('anon-track').className = 'toggle-track' + (anonMode ? ' on' : '');
+  document.getElementById('anon-toggle').className = 'anon-toggle' + (anonMode ? ' active' : '');
+  document.getElementById('anon-text').textContent = anonMode ? '🎭 Mode anonyme activé' : 'Envoyer anonymement';
+  document.getElementById('anon-info').className = 'anon-info' + (anonMode ? ' show' : '');
+}
+
+function onInput() {
+  const len = document.getElementById('msg-text').value.length;
+  document.getElementById('char-cnt').textContent = len + ' / 500';
+}
+
+function sendMsg() {
+  const text = document.getElementById('msg-text').value.trim();
+  if (!text) return showToast('✏️ Écrivez un message d\'abord.', 'error');
+  if (text.length > 500) return showToast('Message trop long (500 max).', 'error');
+
+  const msgs = get('s710_msgs', []);
+  msgs.unshift({
+    id: Date.now().toString(),
+    uid: currentUser.id,
+    uname: currentUser.name,
+    text,
+    anon: anonMode,
+    at: new Date().toISOString()
+  });
+  put('s710_msgs', msgs);
+
+  document.getElementById('msg-text').value = '';
+  document.getElementById('char-cnt').textContent = '0 / 500';
+  showToast('📤 Message envoyé à Mathis !', 'success');
+  renderMyMsgs();
+}
+
+function renderMyMsgs() {
+  const msgs = get('s710_msgs', []).filter(m => m.uid === currentUser.id);
+  const el = document.getElementById('my-msgs');
+  if (!msgs.length) {
+    el.innerHTML = `<div class="empty"><span class="empty-icon">📭</span>Aucun message envoyé pour l'instant.</div>`;
+    return;
+  }
+  el.innerHTML = msgs.map(m => `
+    <div class="msg-item">
+      <div class="msg-item-head">
+        <span class="badge badge-sent">✓ Envoyé</span>
+        <span class="badge ${m.anon ? 'badge-anon' : 'badge-named'}">${m.anon ? '🎭 Anonyme' : '👤 Identifié'}</span>
+      </div>
+      <div class="msg-item-body">${esc(m.text)}</div>
+      <div class="msg-item-time">${fmtDate(m.at)}</div>
+    </div>
+  `).join('');
+}
+
+// ═══ ADMIN ═══
+function openAdmin() {
+  goTo('admin-panel');
+  loadAdminMsgs();
+  loadUsers();
+  loadStats();
+}
+
+function switchTab(el) {
+  const tab = el.dataset.tab;
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+  if (tab === 'stats') loadStats();
+  if (tab === 'users') loadUsers();
+}
+
+function setFilter(f, el) {
+  msgFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  loadAdminMsgs();
+}
+
+function loadAdminMsgs() {
+  let msgs = get('s710_msgs', []);
+  if (msgFilter === 'anon') msgs = msgs.filter(m => m.anon);
+  if (msgFilter === 'named') msgs = msgs.filter(m => !m.anon);
+
+  const count = get('s710_msgs', []).length;
+  const countEl = document.getElementById('msg-count');
+  if (countEl) countEl.textContent = count;
+
+  const el = document.getElementById('admin-msgs-list');
+  if (!msgs.length) {
+    el.innerHTML = `<div class="empty"><span class="empty-icon">📭</span>Aucun message ici.</div>`;
+    return;
+  }
+  el.innerHTML = msgs.map(m => `
+    <div class="admin-msg">
+      <div class="admin-msg-head">
+        <span class="badge ${m.anon ? 'badge-anon' : 'badge-named'}">${m.anon ? '🎭 Anonyme' : '👤 ' + esc(m.uname)}</span>
+      </div>
+      <div class="admin-msg-body">${esc(m.text)}</div>
+      <div class="admin-msg-foot">
+        <span class="msg-time">${fmtDate(m.at)}</span>
+        <button class="btn btn-danger btn-sm" onclick="delMsg('${m.id}')">🗑️ Supprimer</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function delMsg(id) {
+  if (!confirm('Supprimer ce message ?')) return;
+  put('s710_msgs', get('s710_msgs', []).filter(m => m.id !== id));
+  loadAdminMsgs();
+  loadStats();
+  showToast('🗑️ Message supprimé.', 'success');
+}
+
+function loadUsers() {
+  const users = get('s710_users', []);
+  const msgs  = get('s710_msgs', []);
+  const el = document.getElementById('users-list');
+  if (!users.length) {
+    el.innerHTML = `<div class="empty"><span class="empty-icon">👥</span>Aucun élève inscrit.</div>`;
+    return;
+  }
+  el.innerHTML = users.map(u => `
+    <div class="user-row">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="user-avatar">${u.name.charAt(0).toUpperCase()}</div>
+        <div>
+          <div class="user-name">${esc(u.name)}</div>
+          <div class="user-email">${esc(u.email)}</div>
+        </div>
+      </div>
+      <div class="user-meta">
+        ${msgs.filter(m => m.uid === u.id).length} message(s)<br>
+        <span style="font-size:10px">${fmtDate(u.at)}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function loadStats() {
+  const msgs  = get('s710_msgs', []);
+  const users = get('s710_users', []);
+  document.getElementById('s-total').textContent = msgs.length;
+  document.getElementById('s-anon').textContent  = msgs.filter(m => m.anon).length;
+  document.getElementById('s-users').textContent = users.length;
+}
+
+// ═══ UTILS ═══
+function showErr(el, msg) { el.textContent = msg; el.style.display = 'block'; }
+
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type + ' show';
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function fmtDate(iso) {
+  try {
+    return new Date(iso).toLocaleString('fr-FR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+  } catch { return iso; }
+}
+
+// ═══ INIT ═══
+window.addEventListener('DOMContentLoaded', () => {
+  const s = get('s710_session', null);
+  if (s) {
+    currentUser = s;
+    if (s.isAdmin) openAdmin();
+    else openStudent();
+  }
+});
+</script>
+</body>
+</html>
